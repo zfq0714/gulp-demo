@@ -9,13 +9,13 @@ var gulp = require('gulp'),
     less = require('gulp-less'), //压缩合并less  
     del = require('del'),
     rename = require('gulp-rename');
-    browserSync = require("browser-sync").create(), //浏览器实时刷新 
+browserSync = require("browser-sync").create(), //浏览器实时刷新 
     babel = require("gulp-babel"),
     watch = require("gulp-watch"),
     browserify = require('browserify'),
-    source = require('vinyl-source-stream'),  //steam流
-    buffer = require('vinyl-buffer'),  //buffer流
-    glob = require('glob');     //遍历文件
+    source = require('vinyl-source-stream'), //steam流
+    buffer = require('vinyl-buffer'), //buffer流
+    glob = require('glob'); //遍历文件
 
 //删除dist下的所有文件  
 gulp.task('delete', function(cb) {
@@ -67,19 +67,36 @@ gulp.task("script", function(cb) {
     glob('./src/js/*.js', function(err, files) {
         var b = browserify();
         files.forEach(function(file) {
-          b.add(file);
+            b.add(file);
         });
-        b.transform("babelify", { presets: ["es2015"] })
-          .bundle()
-          .pipe(source('bundle.js'))
-          .pipe(buffer())
-          .pipe(uglify())
-          .pipe(gulp.dest('./dist/js'))
-          .pipe(browserSync.reload({ stream: true }));
+        //babel转换
+        b.transform("babelify", {
+                "presets": [
+                    "es2015",
+                    "stage-0"
+                ],
+                "plugins": [
+                    [
+                        "transform-runtime",
+                        {
+                            "helpers": false,
+                            "polyfill": false,
+                            "regenerator": true,
+                            "moduleName": "babel-runtime"
+                        }
+                    ]
+                ]
+            })
+            .bundle()
+            .pipe(source('bundle.js'))
+            .pipe(buffer())
+            .pipe(uglify())
+            .pipe(gulp.dest('./dist/js'))
+            .pipe(browserSync.reload({ stream: true }));
 
         cb();
-     })
-    
+    })
+
 });
 
 

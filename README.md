@@ -1,4 +1,5 @@
 # gulp简单封装
+> 用gulp构建了基于html、css、js、images文件的前端自动化构建工具
 ### 目录结构
 ![mulu](http://oj8tmy8ot.bkt.clouddn.com/%E5%9B%BE%E5%B1%82%200.jpg)
 

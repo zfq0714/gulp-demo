@@ -15,7 +15,8 @@ var gulp = require('gulp'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'), //steam流
     buffer = require('vinyl-buffer'), //buffer流
-    glob = require('glob'); //遍历文件
+    glob = require('glob'), //遍历文件
+    plumber = require('gulp-plumber');  //编译错误处理，不跳出编译状态
 
 //删除dist下的所有文件  
 gulp.task('delete', function(cb) {
@@ -42,6 +43,11 @@ gulp.task('html', function() {
 //实时编译less  
 gulp.task('less', function() {
     gulp.src(['./src/less/*.less']) //多个文件以数组形式传入  
+        .pipe(plumber({
+            errorHandler:function(error){
+                this.emit('end');
+            }
+        }))
         .pipe(changed('dist/css', { hasChanged: changed.compareSha1Digest }))
         .pipe(less()) //编译less文件  
         .pipe(cleanCSS()) //压缩新生成的css  
